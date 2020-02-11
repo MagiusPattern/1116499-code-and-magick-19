@@ -27,19 +27,27 @@ var getMaxElement = function (arr) {
   return maxElement;
 };
 
-window.renderStatistics = function (ctx, names, times) {
-  renderCloud(ctx, CLOUD_X + GAP, CLOUD_Y + GAP, 'rgba(0, 0, 0, 0.7)');
-  renderCloud(ctx, CLOUD_X, CLOUD_Y, '#fff');
+var renderText = function (ctx, x, y, text) {
   ctx.fillStyle = '#000';
   ctx.fontStyle = FONT_SIZE + 'px PT Mono';
-  ctx.fillText('Ура вы победили!', CLOUD_X + GAP_HEIGHT, CLOUD_Y + GAP + GAP_HEIGHT);
-  ctx.fillText('Список результатов:', CLOUD_X + GAP_HEIGHT, CLOUD_Y + GAP + GAP_HEIGHT + GAP_HEIGHT);
+  ctx.fillText(text, x, y);
+};
+
+var renderBar = function (ctx, name, time, index, maxTime) {
+  ctx.fillText(name, CLOUD_X + BAR_WIDTH + (BAR_GAP + BAR_WIDTH) * index, CLOUD_HEIGHT - GAP);
+  ctx.fillStyle = (name === 'Вы') ? 'red' : 'hsl(240, ' + Math.random() * 100 + '% , 50% )';
+  ctx.fillRect(CLOUD_X + BAR_WIDTH + (BAR_GAP + BAR_WIDTH) * index, CLOUD_HEIGHT - GAP - GAP_HEIGHT - (time / maxTime) * GIST_HEIGHT, BAR_WIDTH, (time / maxTime) * GIST_HEIGHT);
+  ctx.fillStyle = '#000';
+  ctx.fillText(Math.round(time), CLOUD_X + BAR_WIDTH + (BAR_GAP + BAR_WIDTH) * index, CLOUD_HEIGHT - GAP - GAP - (time / maxTime) * GIST_HEIGHT - GAP_HEIGHT);
+};
+
+window.renderStatistics = function (ctx, names, times) {
   var maxTime = getMaxElement(times);
+  renderCloud(ctx, CLOUD_X + GAP, CLOUD_Y + GAP, 'rgba(0, 0, 0, 0.7)');
+  renderCloud(ctx, CLOUD_X, CLOUD_Y, '#fff');
+  renderText(ctx, CLOUD_X + GAP_HEIGHT, CLOUD_Y + GAP + GAP_HEIGHT, 'Ура вы победили!');
+  renderText(ctx, CLOUD_X + GAP_HEIGHT, CLOUD_Y + GAP + GAP_HEIGHT + GAP_HEIGHT, 'Список результатов:');
   for (var i = 0; i < names.length; i++) {
-    ctx.fillText(names[i], CLOUD_X + BAR_WIDTH + (BAR_GAP + BAR_WIDTH) * i, CLOUD_HEIGHT - GAP);
-    ctx.fillStyle = (names[i] === 'Вы') ? 'red' : 'hsl(240, ' + Math.random() * 100 + '% , 50% )';
-    ctx.fillRect(CLOUD_X + BAR_WIDTH + (BAR_GAP + BAR_WIDTH) * i, CLOUD_HEIGHT - GAP - GAP_HEIGHT - (times[i] / maxTime) * GIST_HEIGHT, BAR_WIDTH, (times[i] / maxTime) * GIST_HEIGHT);
-    ctx.fillStyle = '#000';
-    ctx.fillText(Math.round(times[i]), CLOUD_X + BAR_WIDTH + (BAR_GAP + BAR_WIDTH) * i, CLOUD_HEIGHT - GAP - GAP - (times[i] / maxTime) * GIST_HEIGHT - GAP_HEIGHT);
+    renderBar(ctx, names[i], times[i], i, maxTime);
   }
 };
